@@ -7,6 +7,9 @@
     {{ wtf.quick_form(form) }}
     <br>
     {% endif %}
+    <span id="refreshData">
+        <a href="javascript:refresh_bank('#refreshData');">Refresh Bank Data</a>
+    </span>
 {#    {% for post in posts %}#}
 {#        {% include '_post.html' %}#}
 {#    {% endfor %}#}

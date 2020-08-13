@@ -1,5 +1,5 @@
 from app import db
-from app.main import bp
+from app.main import bp, refresh_bank as rb
 from flask import render_template, flash, redirect, url_for, request, g, jsonify
 from flask_login import current_user, login_required
 
@@ -26,3 +26,10 @@ def index():
     #                        posts=posts.items, next_url=next_url,
     #                        prev_url=prev_url)
     return render_template('index.html', title='Home')
+
+
+@bp.route('/refresh_bank', methods=['POST'])
+@login_required
+def refresh_bank():
+    rb.refresh_bank()
+    return redirect(url_for('main.index'))

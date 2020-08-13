@@ -48,3 +48,21 @@
         {% block app_content %}{% endblock %}
     </div>
 {% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+
+    <script>
+        function refresh_bank(elem) {
+            $(elem).html('<img src="{{ url_for('static', filename='loading.gif') }}">');
+            $.post('/refresh_bank'
+            ).done(function() {
+                $(elem).text('Refresh Completed')
+            }).fail(function() {
+                $(elem).text('Refreshed Failed')
+            });
+        }
+    </script>
+{% endblock %}
+
+

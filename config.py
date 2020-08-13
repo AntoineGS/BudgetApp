@@ -17,4 +17,6 @@ class Config:
     username = os.environ.get('USERNAME')
     password = os.environ.get('PASSWORD')
     admins = ['antoineg.simard@gmail.com']
+    cibcUsername = os.environ.get('CIBC_USERNAME')
+    cibcPassword = os.environ.get('CIBC_PASSWORD')
     testing = False
