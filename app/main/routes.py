@@ -31,5 +31,6 @@ def index():
 @bp.route('/refresh_bank', methods=['POST'])
 @login_required
 def refresh_bank():
-    rb.refresh_bank()
-    return redirect(url_for('main.index'))
+    count = rb.refresh_bank()
+    flash('{} transactions added.'.format(count))
+    return render_template('index.html', title='Home')
