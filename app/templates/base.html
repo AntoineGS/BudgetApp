@@ -1,40 +1,47 @@
-{% extends "truebase.html" %}
+{% block doc -%}
+<!DOCTYPE html>
+<html{% block html_attribs %}{% endblock html_attribs %}>
+{%- block html %}
+    <head>
+        {%- block head %}
+        <title>{% block title %}{{title|default}}{% endblock title %}</title>
 
-{% block title %}
-    {% if title %}{{ title }} - BudgetApp{% else %}Welcome to Microblog{% endif %}
-{% endblock %}
+        {%- block metas %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {%- endblock metas %}
 
-{% block navbar %}
-    <nav class="navbar navbar-default">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{{ url_for('main.index') }}">BudgetApp</a>
+        <!-- Bootstrap \ jQuery -->
+        <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+{#        <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>#}
+        {%- block styles %}
+        {%- endblock styles %}
+        {%- endblock head %}
+    </head>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">BudgetApp</a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse1">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link active" href="{{ url_for('main.index') }}">Home</a>
+                </div>
+
+                {% if current_user.is_anonymous %}
+                <a class="ml-auto" href="{{ url_for('auth.login') }}">Login</a>
+                {% else %}
+                <a class="ml-auto" href="{{ url_for('auth.logout') }}">Logout</a>
+                {% endif %}
             </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('main.index') }}">Home</a></li>
-{#                    <li><a href="{{ url_for('main.explore') }}">Explore</a></li>#}
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    {% if current_user.is_anonymous %}
-                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-                    {% else %}
-{#                    <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>#}
-                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-{% endblock %}
+        </nav>
+    <br>
+    </header>
 
-{% block content %}
+    <body{% block body_attribs %}{% endblock body_attribs %}>
+    {% block body -%}
     <div class="container">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -44,25 +51,14 @@
         {% endif %}
         {% endwith %}
 
-        {# application content needs to be provided in the app_content block #}
-        {% block app_content %}{% endblock %}
+        {% block content -%}
+        {%- endblock content %}
     </div>
-{% endblock %}
 
-{% block scripts %}
-    {{ super() }}
-
-    <script>
-        function refresh_bank(elem) {
-            $(elem).html('<img src="{{ url_for('static', filename='loading.gif') }}">');
-            $.post('/refresh_bank'
-            ).done(function() {
-                $(elem).text('Refresh Completed')
-            }).fail(function() {
-                $(elem).text('Refreshed Failed')
-            });
-        }
-    </script>
-{% endblock %}
-
-
+    {% block scripts %}
+    {%- endblock scripts %}
+    {%- endblock body %}
+    </body>
+{%- endblock html %}
+</html>
+{% endblock doc -%}
