@@ -6,8 +6,6 @@
 {#    {{ form.render_form(_form) }}#}
 {#    <br>#}
 {#    {% endif %}#}
-{#      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">#}
-{#  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>#}
      <button id="refreshDataBtn" type="button" class="btn btn-outline-primary">
          <span id="refreshDataBtnSpan"></span><span id="refreshDataBtnLabel" >Refresh Bank Data</span></button>
 {% endblock %}
@@ -16,16 +14,21 @@
 {% block scripts %}
     <script>
         $('#refreshDataBtn').on('click', function(event){
-            $('#refreshDataBtnLabel').html('');
+            $('#refreshDataBtnLabel').html(' Refreshing');
             $('#refreshDataBtnSpan').addClass('spinner-border spinner-border-sm');
+            $('#refreshDataBtn').attr('disabled', true);
 
             $.post('/refresh_bank'
-            ).done(function(){
-                $('#refreshDataBtnLabel').html('Refresh Completed');
+            ).done(function(count){
+                flashMessage(`${count} Transactions Downloaded`);
+                $('#refreshDataBtnLabel').html('Refresh Bank Data');
                 $('#refreshDataBtnSpan').removeClass('spinner-border spinner-border-sm');
+                $('#refreshDataBtn').attr('disabled', false);
             }).fail(function(){
-                $('#refreshDataBtnLabel').html('Refresh Failed');
+                flashMessage(`Refresh Failed`);
+                $('#refreshDataBtnLabel').html('Refresh Bank Data');
                 $('#refreshDataBtnSpan').removeClass('spinner-border spinner-border-sm');
+                $('#refreshDataBtn').attr('disabled', false);
             });
         });
     </script>

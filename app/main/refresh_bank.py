@@ -16,7 +16,7 @@ def refresh_bank():
     for account in c.accounts:
         for transaction in account.transactions:
             bank_transaction = BankTransaction.query.filter_by(
-                account_id=account.id, transaction_id=transaction.id).first()
+                account_id=account.id, transaction_id=transaction.fitId).first()
 
             # if we don't have it we insert it
             if not bank_transaction:

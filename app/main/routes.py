@@ -32,5 +32,4 @@ def index():
 @login_required
 def refresh_bank():
     count = rb.refresh_bank()
-    flash('{} transactions added.'.format(count))
-    return render_template('index.html', title='Home')
+    return str(count)
