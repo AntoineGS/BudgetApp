@@ -1,7 +1,10 @@
 from app import db
 from app.main import bp, refresh_bank as rb
-from flask import render_template, flash, redirect, url_for, request, g, jsonify
-from flask_login import current_user, login_required
+from app.main.forms import NewCategoryForm
+from app.models import Category
+from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask_login import login_required
+import json
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -33,3 +36,20 @@ def index():
 def refresh_bank():
     count = rb.refresh_bank()
     return str(count)
+
+
+@bp.route('/categories',  methods=['GET', 'POST'])
+@login_required
+def categories():
+    form = NewCategoryForm()  # for rendering only, the processing is in add-directory
+    if form.is_submitted():
+        if form.validate_on_submit():
+            category = Category(name=form.category_name.data, use_in_budget=form.use_in_budget.data)
+            db.session.add(category)
+            db.session.commit()
+            return jsonify(status='ok')
+        else:
+            # data = json.dumps(form.errors, ensure_ascii=False)
+            data = json.dumps(form.errors, ensure_ascii=False)
+            return jsonify(data)
+    return render_template('categories.html', title='Categories', category_form=form)

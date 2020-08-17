@@ -2,7 +2,6 @@ import cibc
 from app import config, db
 from app.models import BankTransaction
 from datetime import date
-from flask import flash
 from dateutil import parser
 
 

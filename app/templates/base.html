@@ -31,6 +31,7 @@
                 <div class="collapse navbar-collapse">
                     <div class="navbar-nav">
                         <a class="nav-item nav-link active" href="{{ url_for('main.index') }}">Home</a>
+                        <a class="nav-item nav-link" href="{{ url_for('main.categories') }}">Categories</a>
                     </div>
 
                     {% if current_user.is_anonymous %}

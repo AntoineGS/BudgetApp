@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block content %}
+     <button id="newCategoryBtn" type="button" class="btn btn-outline-primary" data-toggle="modal"
+             data-target="#newCategoryModal">New Category</button>
+
+    <div class="modal fade" id="newCategoryModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                  <h4 class="modal-title">New Category</h4>
+                  <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    {% if category_form %}
+{#                        <div>{{ category_form.category_name.label }}: {{ category_form.category_name() }}</div>#}
+{#                        <div>{{ category_form.use_in_budget.label }}: {{ category_form.use_in_budget() }}</div>#}
+                    {{ render_form(category_form, id="categoryForm", button_map={'submit': 'success'}) }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+      $('#submit').click(function(event) {
+          event.preventDefault();
+          $('.invalid-feedback').remove();
+          $.post('/categories', data=$('#categoryForm').serialize(), function(result) {
+            if (result.status == 'ok') {
+              $('#editModal').modal('hide');
+              location.reload();
+              flashMessage('Category created');
+            }
+            else {
+              const obj = JSON.parse(result);
+              $.each(obj, function(key, value) {
+                $('#' + key).before('<div class="invalid-feedback" style="display: block;">' + value + '</div>');
+              });
+            }
+          });
+      })
+    </script>
+{% endblock %}
