@@ -2,8 +2,9 @@
 {% from 'bootstrap/form.html' import render_form %}
 
 {% block content %}
-     <button id="newCategoryBtn" type="button" class="btn btn-outline-primary" data-toggle="modal"
-             data-target="#newCategoryModal">New Category</button>
+    <button id="newCategoryBtn" type="button" class="btn btn-outline-primary" data-toggle="modal"
+            data-target="#newCategoryModal">New Category</button>
+    <br><br>
 
     <div class="modal fade" id="newCategoryModal">
         <div class="modal-dialog">
@@ -16,27 +17,88 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    {% if category_form %}
-{#                        <div>{{ category_form.category_name.label }}: {{ category_form.category_name() }}</div>#}
-{#                        <div>{{ category_form.use_in_budget.label }}: {{ category_form.use_in_budget() }}</div>#}
-                    {{ render_form(category_form, id="categoryForm", button_map={'submit': 'success'}) }}
-                    {% endif %}
+                  {{ render_form(category_form, id="categoryForm", button_map={'submit': 'success'}) }}
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="deleteCategoryModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                  <h4 class="modal-title">Delete Category</h4>
+                  <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    Are you sure you want to delete this category?
+                </div>
+
+                <div class="modal-footer">
+                    <button id="delCategoryDeleteBtn" type="button" class="btn btn-warning">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table id="categoriesTable" class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Use In Budget</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if categories %}
+                {% for category in categories %}
+                    <tr>
+                        <td>{{ category.name }}</td>
+                        <td>{{ category.use_in_budget }}</td>
+                        <td>
+                            <button data-category-id="{{ category.id }}" type="button"
+                                    class="btn btn-light btn-sm btnDelete"><i class="far fa-trash-alt"></i></button>
+                            <button id="editCategoryBtn" type="button" class="btn btn-light btn-sm">
+                                <i class="fas fa-pencil-alt"></i></button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
 {% endblock %}
 
 {% block scripts %}
     <script>
+      {# Delete category #}
+      $('#categoriesTable').on('click', '.btnDelete', function(event) {
+          event.preventDefault();
+          const btn = $(this); {# we will lose the this context in the post request #}
+          $.post('/categories/delete/' + btn.attr("data-category-id"), function(result) {
+            if (result.status == 'ok') {
+              $('#deleteCategoryModal').modal('hide');
+              btn.closest('tr').remove(); {# instead of refreshing and losing the flashed message #}
+              flashMessage('Category Deleted');
+            }
+            else {
+              flashMessage('Deletion Failed');
+            }
+          });
+      })
+
+      {# New category #}
       $('#submit').click(function(event) {
           event.preventDefault();
           $('.invalid-feedback').remove();
           $.post('/categories', data=$('#categoryForm').serialize(), function(result) {
             if (result.status == 'ok') {
-              $('#editModal').modal('hide');
+              $('#newCategoryModal').modal('hide');
               location.reload();
-              flashMessage('Category created');
+              flashMessage('Category Created');
             }
             else {
               const obj = JSON.parse(result);

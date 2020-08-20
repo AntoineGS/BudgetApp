@@ -4,7 +4,7 @@ from wtforms.validators import ValidationError, DataRequired, Length
 
 
 class NewCategoryForm(FlaskForm):
-    category_name = StringField('Name', validators=[DataRequired(), Length(max=50)])
+    category_name = StringField('Name', validators=[DataRequired(), Length(max=50)], render_kw={'autofocus': True})
     use_in_budget = BooleanField('Use in Budget')
     # cancel =
     submit = SubmitField('Submit')

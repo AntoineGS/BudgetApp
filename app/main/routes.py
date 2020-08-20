@@ -2,7 +2,7 @@ from app import db
 from app.main import bp, refresh_bank as rb
 from app.main.forms import NewCategoryForm
 from app.models import Category
-from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask import render_template, jsonify
 from flask_login import login_required
 import json
 
@@ -52,4 +52,17 @@ def categories():
             # data = json.dumps(form.errors, ensure_ascii=False)
             data = json.dumps(form.errors, ensure_ascii=False)
             return jsonify(data)
-    return render_template('categories.html', title='Categories', category_form=form)
+    categories_records = Category.query.order_by(Category.name.asc()).all()
+    return render_template('categories.html', title='Categories', category_form=form, categories=categories_records)
+
+
+@bp.route('/categories/delete/<category_id>',  methods=['POST'])
+@login_required
+def delete(category_id):
+    category = Category.query.get(category_id)
+    if category:
+        db.session.delete(category)
+        db.session.commit()
+        return jsonify(status='ok')
+    else:
+        return jsonify(status='not_found')
