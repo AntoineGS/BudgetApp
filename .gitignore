@@ -1,7 +1,9 @@
 /venv/
 /Bank Files/
+/logs/
 __pycache__
 .idea
 .env
 .db
+.log
 *.db*
