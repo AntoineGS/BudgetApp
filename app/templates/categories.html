@@ -62,8 +62,11 @@
                         <td>
                             <button data-category-id="{{ category.id }}" type="button"
                                     class="btn btn-light btn-sm btnDelete"><i class="far fa-trash-alt"></i></button>
-                            <button id="editCategoryBtn" type="button" class="btn btn-light btn-sm">
-                                <i class="fas fa-pencil-alt"></i></button>
+                            <a href="{{ url_for('main.categories_edit', category_id=category.id) }}">
+                                <button type="button" class="btn btn-light btn-sm">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -76,11 +79,12 @@
     <script>
       {# Delete category #}
       $('#categoriesTable').on('click', '.btnDelete', function(event) {
-          event.preventDefault();
           const btn = $(this); {# we will lose the this context in the post request #}
-          $.post('/categories/delete/' + btn.attr("data-category-id"), function(result) {
+          const url = "{{ url_for('main.categories_delete', category_id='REPLACE_THIS') }}"
+              .replace("REPLACE_THIS", btn.attr("data-category-id"));
+
+          $.post(url, function(result) {
             if (result.status == 'ok') {
-              $('#deleteCategoryModal').modal('hide');
               btn.closest('tr').remove(); {# instead of refreshing and losing the flashed message #}
               flashMessage('Category Deleted');
             }
@@ -98,7 +102,6 @@
             if (result.status == 'ok') {
               $('#newCategoryModal').modal('hide');
               location.reload();
-              flashMessage('Category Created');
             }
             else {
               const obj = JSON.parse(result);
@@ -107,6 +110,11 @@
               });
             }
           });
-      })
+      });
+
+      $('#cancel').click(function(event) {
+         event.preventDefault();
+           $('#newCategoryModal').modal('hide');
+      });
     </script>
 {% endblock %}

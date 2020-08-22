@@ -2,7 +2,7 @@ from app import db
 from app.main import bp, refresh_bank as rb
 from app.main.forms import NewCategoryForm
 from app.models import Category
-from flask import render_template, jsonify
+from flask import render_template, jsonify, redirect, url_for, request
 from flask_login import login_required
 import json
 
@@ -11,23 +11,6 @@ import json
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    # form = PostForm()
-    # if form.validate_on_submit():
-    #     post = Post(body=form.post.data, author=current_user, language=language)
-    #     db.session.add(post)
-    #     db.session.commit()
-    #     flash('Your post is now live!')
-    #     return redirect(url_for('main.index'))
-    # page = request.args.get('page', 1, type=int)
-    # posts = current_user.followed_posts().paginate(
-    #     page, config.postsPerPage, False)
-    # next_url = url_for('main.index', page=posts.next_num) \
-    #     if posts.has_next else None
-    # prev_url = url_for('main.index', page=posts.prev_num) \
-    #     if posts.has_prev else None
-    # return render_template('index.html', title=_('Home'), form=form,
-    #                        posts=posts.items, next_url=next_url,
-    #                        prev_url=prev_url)
     return render_template('index.html', title='Home')
 
 
@@ -41,7 +24,7 @@ def refresh_bank():
 @bp.route('/categories',  methods=['GET', 'POST'])
 @login_required
 def categories():
-    form = NewCategoryForm()  # for rendering only, the processing is in add-directory
+    form = NewCategoryForm()
     if form.is_submitted():
         if form.validate_on_submit():
             category = Category(name=form.category_name.data, use_in_budget=form.use_in_budget.data)
@@ -56,9 +39,26 @@ def categories():
     return render_template('categories.html', title='Categories', category_form=form, categories=categories_records)
 
 
-@bp.route('/categories/delete/<category_id>',  methods=['POST'])
+@bp.route('/categories/edit/<category_id>',  methods=['GET', 'POST'])
 @login_required
-def delete(category_id):
+def categories_edit(category_id):
+    category = Category.query.get_or_404(category_id)
+    form = NewCategoryForm()
+    if form.is_submitted():
+        if form.validate_on_submit():
+            if 'submit' in request.form:
+                category.name = form.category_name.data
+                category.use_in_budget = form.use_in_budget.data
+                db.session.commit()
+        return redirect(url_for('main.categories'))
+    else:
+        form.fill_from_db(category)
+    return render_template('category.html', title='Edit Category', category_form=form)
+
+
+@bp.route('/categories/delete/<category_id>',  methods=['GET', 'POST'])
+@login_required
+def categories_delete(category_id):
     category = Category.query.get(category_id)
     if category:
         db.session.delete(category)
