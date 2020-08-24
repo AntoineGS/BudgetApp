@@ -1,7 +1,7 @@
 from app import db
 from app.main import bp, refresh_bank as rb
 from app.main.forms import NewCategoryForm
-from app.models import Category
+from app.models import Category, Transaction
 from flask import render_template, jsonify, redirect, url_for, request
 from flask_login import login_required
 import json
@@ -59,10 +59,34 @@ def categories_edit(category_id):
 @bp.route('/categories/delete/<category_id>',  methods=['GET', 'POST'])
 @login_required
 def categories_delete(category_id):
-    category = Category.query.get(category_id)
+    category = Category.query.get_or_404(category_id)
     if category:
         db.session.delete(category)
         db.session.commit()
         return jsonify(status='ok')
     else:
         return jsonify(status='not_found')
+
+
+@bp.route('/transactions',  methods=['GET'])
+@login_required
+def transactions():
+    db_transactions = Transaction.query.order_by(Transaction.transaction_date.desc()).all()
+    db_categories = Category.query.order_by(Category.name.asc()).all()
+    return render_template('transactions.html', title='Transactions', db_transactions=db_transactions,
+                           db_categories=db_categories)
+
+
+@bp.route('/transaction/<transaction_id>/edit', methods=['POST'])
+@login_required
+def transaction_edit(transaction_id):
+    field_name = request.args.get('field_name', None)
+    field_value = request.args.get('field_value', None)
+
+    if field_name:
+        transaction = Transaction.query.get_or_404(transaction_id)
+        transaction.change_field_by_name(field_name, field_value)
+        db.session.commit()
+        return jsonify(status='ok', category_name=transaction.category.name)
+
+    return jsonify(status='failed')
