@@ -49,22 +49,24 @@
 
 {% block scripts %}
     <script>
-        $('#categoriesTable').on('click', '.btnChangeCategory', function(event) {
-            const btn = $(this); {# we will lose the this context in the post request #}
-            const url = "{{ url_for('main.transaction_edit', transaction_id='REPLACE_THIS') }}"
-                        .replace("REPLACE_THIS", btn.attr("data-transaction-id")) +
-                        '?field_name=category_id' +
-                        '&field_value=' + btn.attr("data-category-id");
+        $(document).ready(function() {
+            $('#categoriesTable').on('click', '.btnChangeCategory', function(event) {
+                const btn = $(this); {# we will lose the this context in the post request #}
+                const url = "{{ url_for('main.transaction_edit', transaction_id='REPLACE_THIS') }}"
+                            .replace("REPLACE_THIS", btn.attr("data-transaction-id")) +
+                            '?field_name=category_id' +
+                            '&field_value=' + btn.attr("data-category-id");
 
-            $.post(url, function(result) {
-                if (result.status == 'ok') {
-                    {# prevent having to reload the whole page, much quicker #}
-                    btn.closest("td").find(".dropdown-toggle").html(result.category_name);
-                }
-                else {
-                    flashMessage('Edit Failed');
-                }
-            });
-        })
+                $.post(url, function(result) {
+                    if (result.status == 'ok') {
+                        {# prevent having to reload the whole page, much quicker #}
+                        btn.closest("td").find(".dropdown-toggle").html(result.category_name);
+                    }
+                    else {
+                        flashMessage('Edit Failed');
+                    }
+                });
+            })
+        });
     </script>
 {% endblock %}

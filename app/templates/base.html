@@ -3,11 +3,10 @@
 <html{% block html_attribs %}{% endblock html_attribs %}>
 {%- block html %}
     <head>
-        {%- block head %}
         <title>{% block title %}{{title|default}}{% endblock title %}</title>
 
         {%- block metas %}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {%- endblock metas %}
 
         <!-- Bootstrap \ jQuery -->
@@ -18,9 +17,9 @@
         <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
         <script src="https://kit.fontawesome.com/4e8cf57ddd.js" crossorigin="anonymous"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+
         {%- block styles %}
         {%- endblock styles %}
-        {%- endblock head %}
 
         <script>
             function flashMessage(message) {
@@ -31,14 +30,14 @@
                     </div>`);
             }
 
-            {# if there is a autofocus field in a modal form, autofocus to it #}
-            $('.modal').on('shown.bs.modal', function() {
-                $(this).find('[autofocus]').focus();
-            });
-
             $(document).ready(function() {
-              $('li.active').removeClass('active');
-              $('a[href="' + location.pathname + '"]').closest('li').addClass('active');
+                {# if there is a autofocus field in a modal form, autofocus to it #}
+                $('.modal').on('shown.bs.modal', function() {
+                    $(this).find('[autofocus]').focus();
+                });
+
+                $('li.active').removeClass('active');
+                $('a[href="' + location.pathname + '"]').closest('li').addClass('active');
             });
         </script>
 
@@ -84,7 +83,7 @@
             {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                flashMessage(message)
+                <script>flashMessage('{{ message }}');</script>
                 {% endfor %}
             {% endif %}
             {% endwith %}

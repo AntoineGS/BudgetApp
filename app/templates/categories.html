@@ -77,44 +77,46 @@
 
 {% block scripts %}
     <script>
-      {# Delete category #}
-      $('#categoriesTable').on('click', '.btnDelete', function(event) {
-          const btn = $(this); {# we will lose the this context in the post request #}
-          const url = "{{ url_for('main.categories_delete', category_id='REPLACE_THIS') }}"
-              .replace("REPLACE_THIS", btn.attr("data-category-id"));
+      $(document).ready(function() {
+          {# Delete category #}
+          $('#categoriesTable').on('click', '.btnDelete', function(event) {
+              const btn = $(this); {# we will lose the this context in the post request #}
+              const url = "{{ url_for('main.categories_delete', category_id='REPLACE_THIS') }}"
+                  .replace("REPLACE_THIS", btn.attr("data-category-id"));
 
-          $.post(url, function(result) {
-            if (result.status == 'ok') {
-              btn.closest('tr').remove(); {# instead of refreshing and losing the flashed message #}
-              flashMessage('Category Deleted');
-            }
-            else {
-              flashMessage('Deletion Failed');
-            }
-          });
-      })
-
-      {# New category #}
-      $('#submit').click(function(event) {
-          event.preventDefault();
-          $('.invalid-feedback').remove();
-          $.post('/categories', data=$('#categoryForm').serialize(), function(result) {
-            if (result.status == 'ok') {
-              $('#newCategoryModal').modal('hide');
-              location.reload();
-            }
-            else {
-              const obj = JSON.parse(result);
-              $.each(obj, function(key, value) {
-                $('#' + key).before('<div class="invalid-feedback" style="display: block;">' + value + '</div>');
+              $.post(url, function(result) {
+                if (result.status == 'ok') {
+                  btn.closest('tr').remove(); {# instead of refreshing and losing the flashed message #}
+                  flashMessage('Category Deleted');
+                }
+                else {
+                  flashMessage('Deletion Failed');
+                }
               });
-            }
-          });
-      });
+          })
 
-      $('#cancel').click(function(event) {
-         event.preventDefault();
-           $('#newCategoryModal').modal('hide');
+          {# New category #}
+          $('#submit').click(function(event) {
+              event.preventDefault();
+              $('.invalid-feedback').remove();
+              $.post('/categories', data=$('#categoryForm').serialize(), function(result) {
+                if (result.status == 'ok') {
+                  $('#newCategoryModal').modal('hide');
+                  location.reload();
+                }
+                else {
+                  const obj = JSON.parse(result);
+                  $.each(obj, function(key, value) {
+                    $('#' + key).before('<div class="invalid-feedback" style="display: block;">' + value + '</div>');
+                  });
+                }
+              });
+          });
+
+          $('#cancel').click(function(event) {
+             event.preventDefault();
+               $('#newCategoryModal').modal('hide');
+          });
       });
     </script>
 {% endblock %}

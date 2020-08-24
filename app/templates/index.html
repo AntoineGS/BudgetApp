@@ -8,22 +8,24 @@
 
 {% block scripts %}
     <script>
-        $('#refreshDataBtn').on('click', function(event){
-            $('#refreshDataBtnLabel').html(' Refreshing');
-            $('#refreshDataBtnSpan').addClass('spinner-border spinner-border-sm');
-            $('#refreshDataBtn').attr('disabled', true);
+        $(document).ready(function() {
+            $('#refreshDataBtn').on('click', function(event){
+                $('#refreshDataBtnLabel').html(' Refreshing');
+                $('#refreshDataBtnSpan').addClass('spinner-border spinner-border-sm');
+                $('#refreshDataBtn').attr('disabled', true);
 
-            $.post('/refresh_bank'
-            ).done(function(count){
-                flashMessage(`${count} Transactions Downloaded`);
-                $('#refreshDataBtnLabel').html('Refresh Bank Data');
-                $('#refreshDataBtnSpan').removeClass('spinner-border spinner-border-sm');
-                $('#refreshDataBtn').attr('disabled', false);
-            }).fail(function(){
-                flashMessage(`Refresh Failed`);
-                $('#refreshDataBtnLabel').html('Refresh Bank Data');
-                $('#refreshDataBtnSpan').removeClass('spinner-border spinner-border-sm');
-                $('#refreshDataBtn').attr('disabled', false);
+                $.post('/refresh_bank'
+                ).done(function(count){
+                    flashMessage(`${count} Transactions Downloaded`);
+                    $('#refreshDataBtnLabel').html('Refresh Bank Data');
+                    $('#refreshDataBtnSpan').removeClass('spinner-border spinner-border-sm');
+                    $('#refreshDataBtn').attr('disabled', false);
+                }).fail(function(){
+                    flashMessage(`Refresh Failed`);
+                    $('#refreshDataBtnLabel').html('Refresh Bank Data');
+                    $('#refreshDataBtnSpan').removeClass('spinner-border spinner-border-sm');
+                    $('#refreshDataBtn').attr('disabled', false);
+                });
             });
         });
     </script>
